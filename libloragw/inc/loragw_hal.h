@@ -29,7 +29,9 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 
 #define IS_LORA_BW(bw)          ((bw == BW_125KHZ) || (bw == BW_250KHZ) || (bw == BW_500KHZ))
 #define IS_LORA_DR(dr)          ((dr == DR_LORA_SF5) || (dr == DR_LORA_SF6) || (dr == DR_LORA_SF7) || (dr == DR_LORA_SF8) || (dr == DR_LORA_SF9) || (dr == DR_LORA_SF10) || (dr == DR_LORA_SF11) || (dr == DR_LORA_SF12))
-#define IS_LORA_CR(cr)          ((cr == CR_LORA_4_5) || (cr == CR_LORA_4_6) || (cr == CR_LORA_4_7) || (cr == CR_LORA_4_8))
+//#define IS_LORA_CR(cr)          ((cr == CR_LORA_4_4) || (cr == CR_LORA_4_5) || (cr == CR_LORA_4_6) || (cr == CR_LORA_4_7) || (cr == CR_LORA_4_8))
+#define IS_LORA_CR(cr)          ((cr >= CR_LORA_4_4) && (cr <= CR_LORA_4_8))
+
 
 #define IS_FSK_BW(bw)           ((bw >= 1) && (bw <= 7))
 #define IS_FSK_DR(dr)           ((dr >= DR_FSK_MIN) && (dr <= DR_FSK_MAX))
@@ -87,6 +89,7 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 /* values available for the 'coderate' parameters (LoRa only) */
 /* NOTE: arbitrary values */
 #define CR_UNDEFINED    0
+#define CR_LORA_4_4     0x00
 #define CR_LORA_4_5     0x01
 #define CR_LORA_4_6     0x02
 #define CR_LORA_4_7     0x03
