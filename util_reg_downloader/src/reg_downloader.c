@@ -35,6 +35,8 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 #include <signal.h>     /* sigaction */
 #include <getopt.h>     /* getopt_long */
 
+#include "parson.h"
+
 #include "loragw_hal.h"
 #include "loragw_reg.h"
 #include "loragw_aux.h"
@@ -72,7 +74,10 @@ int main(int argc, char **argv) {
     int i, x;
     unsigned int arg_u;
     uint8_t clocksource = 0;
+    
     bool use_json = false;
+    const char* conf_file   = "sx1302_reglist.json";
+    JSON_Value* root_val    = NULL;
     
     lgw_radio_type_t radio_type = LGW_RADIO_TYPE_SX1250;
 
@@ -131,7 +136,17 @@ int main(int argc, char **argv) {
                 return -1;
         }
     }
-
+    
+    
+    /* try to parse JSON */
+    root_val = json_parse_file_with_comments(conf_file);
+    if (root_val == NULL) {
+        MSG("ERROR: %s is not a valid JSON file\n", conf_file);
+        exit(EXIT_FAILURE);
+    }
+    
+    
+    
     /* Board reset */
     if (system("./reset_lgw.sh start") != 0) {
         printf("ERROR: failed to reset SX1302, check your reset_lgw.sh script\n");
@@ -177,6 +192,8 @@ int main(int argc, char **argv) {
         printf("ERROR: failed to start the gateway\n");
         return EXIT_FAILURE;
     }
+
+
 
     ///@todo Have an interactive input here, could use line-noise library
 
