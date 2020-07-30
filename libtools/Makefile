@@ -16,12 +16,14 @@ INCLUDES = $(wildcard inc/*.h)
 
 ### general build targets
 
-all: libtinymt32.a libparson.a libbase64.a
+all: libtinymt32.a libparson.a libbase64.a liblinenoise.a linenoise_example
 
 clean:
 	rm -f libtinymt32.a
 	rm -f libparson.a
 	rm -f libbase64.a
+	rm -f liblinenoise.a
+	rm -f linenoise_example
 	rm -f $(OBJDIR)/*.o
 
 ### library module target
@@ -42,7 +44,13 @@ libparson.a:  $(OBJDIR)/parson.o
 
 libbase64.a:  $(OBJDIR)/base64.o
 	$(AR) rcs $@ $^
+	
+liblinenoise.a:  $(OBJDIR)/linenoise.o
+	$(AR) rcs $@ $^
 
 ### test programs
 
+linenoise_example: $(OBJDIR)/linenoise.o $(OBJDIR)/linenoise_example.o
+	$(CC) -o $@ $^
+	
 ### EOF
