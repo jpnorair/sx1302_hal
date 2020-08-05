@@ -76,8 +76,11 @@ int main(int argc, char **argv) {
     uint8_t clocksource = 0;
     
     bool use_json = false;
-    const char* conf_file   = "sx1302_reglist.json";
-    JSON_Value* root_val    = NULL;
+    const char* conf_file;
+    const char* conf_default    = "sx1302_reglist.json";
+    JSON_Value* root_val        = NULL;
+    JSON_Value* reglist         = NULL;
+    size_t reglist_size         = 0;
     
     lgw_radio_type_t radio_type = LGW_RADIO_TYPE_SX1250;
 
@@ -194,19 +197,46 @@ int main(int argc, char **argv) {
     }
 
 
-
-    ///@todo Have an interactive input here, could use line-noise library
-
-    /// Download all the registers one by one and print them out.
     /// We use the local template file (sx1302_regs.json) to get the register identities.
-
-    /* get the concentrator EUI */
-    x = lgw_get_eui(&eui);
-    if (x != LGW_HAL_SUCCESS) {
-        printf("ERROR: failed to get concentrator EUI\n");
-    } else {
-        printf("\nINFO: concentrator EUI: 0x%016" PRIx64 "\n\n", eui);
+    conf_file   = conf_default;
+    root_val    = json_parse_file_with_comments(cconf_file);
+    if (root_val == NULL) {
+        printf("ERROR: JSON registry file is corrupted\n");
+        return EXIT_FAILURE;
     }
+    reglist     = json_object_get_array(root_val, "sx1302_reglist");
+    if (reglist == NULL) {
+        printf("ERROR: JSON registry is not found\n");
+        return EXIT_FAILURE;
+    }
+    reglist_size = json_array_get_count(reglist);
+    printf("Registry found (%i registers present)\n\n", (int)reglist_size);
+    
+    
+    ///@todo Have an interactive input here, could use line-noise library
+    
+    /// Download all the registers one by one and print them out.
+    for (i=0, x=0; i<reglist_size; i++) {
+        JSON_Object* reg    = json_array_get_object(reglist, (size_t)i);
+        double index        = json_object_get_number(reg, "index");
+        double offset       = json_object_get_number(reg, "offset");
+        double length       = json_object_get_number(reg, "length");
+        const char* address = json_object_get_string(reg, "address");
+        const char* name    = json_object_get_string(reg, "name");
+        int32_t value;
+        int status;
+        
+        status = lgw_reg_r((uint16_t)register_id, &value);
+        if (LGW_REG_SUCCESS == status) {
+            int int_offset  = (int)offset;
+            int int_length  = (int)length;
+        
+            printf("%s, %i, %s, %i, %i\n", name, value, address, int_offset, int_length);
+            x++;
+        }
+    }
+    printf("\n%i/%i Registers read\n", x, i);
+    
 
     /* Stop the gateway */
     x = lgw_stop();
