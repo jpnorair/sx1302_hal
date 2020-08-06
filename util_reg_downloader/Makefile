@@ -38,7 +38,7 @@ APP_NAME := reg_downloader
 APP_LIBS := -lloragw -lm -ltinymt32 -lparson -lrt
 
 ### Environment constants
-LIB_PATH := ../libloragw
+LIB_PATH := ../libloragw ../libtools
 
 ### Expand build options
 CFLAGS := -std=c99 $(WARN_CFLAGS) $(OPT_CFLAGS) $(DEBUG_CFLAGS)
@@ -74,7 +74,7 @@ $(OBJDIR):
 
 ### Compile main program
 $(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c | $(OBJDIR)
-	$(CC) -c $< -o $@ $(CFLAGS) -Iinc -I../libloragw/inc
+	$(CC) -c $< -o $@ $(CFLAGS) -Iinc -I../libloragw/inc -I../libtools/inc
 
 ### Link everything together
 $(APP_NAME): $(OBJDIR)/$(APP_NAME).o
