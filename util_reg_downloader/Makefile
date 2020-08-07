@@ -38,7 +38,7 @@ APP_NAME := reg_downloader
 APP_LIBS := -lloragw -lm -ltinymt32 -lparson -lrt
 
 ### Environment constants
-LIB_PATH := ../libloragw ../libtools
+LIB_PATH := ../libloragw
 
 ### Expand build options
 CFLAGS := -std=c99 $(WARN_CFLAGS) $(OPT_CFLAGS) $(DEBUG_CFLAGS)
@@ -56,9 +56,9 @@ install:
 ifneq ($(strip $(TARGET_IP)),)
  ifneq ($(strip $(TARGET_DIR)),)
   ifneq ($(strip $(TARGET_USR)),)
-	@echo "---- Copying chip_id files to $(TARGET_IP):$(TARGET_DIR)"
+	@echo "---- Copying reg_downloader files to $(TARGET_IP):$(TARGET_DIR)"
 	@ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
-	@scp chip_id $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
+	@scp reg_downloader $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
   else
 	@echo "ERROR: TARGET_USR is not configured in target.cfg"
   endif
